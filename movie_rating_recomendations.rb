@@ -9,95 +9,114 @@ class MovieData
         @movie_rating_databse = {}
         File.open('u.data').each do |eachLine|
             eachLine = eachLine.split(' ')
-            # add_user_hash(eachLine[0], eachLine[1], eachLine[2]) # creates the user database hash
-            move_to_rating(eachLine[1], eachLine[2])
+            add_user_hash(eachLine[0].to_i, eachLine[1].to_i, eachLine[2].to_i) # creates the user database hash
+            move_to_rating(eachLine[1].to_i, eachLine[2].to_i)
         end
     end
 
     def add_user_hash(user_id, movie_id, rating)
         # function to add user to hash. If it already is there then push it to the array. Otherwise create new array under said key
         if !@user_database[user_id.to_s].nil?
-            @user_database[user_id.to_s].push([movie_id, rating])
+            @user_database[user_id.to_s][movie_id.to_s] = rating.to_s
         else
-            @user_database[user_id.to_s] = []
-            @user_database[user_id.to_s].push([movie_id, rating])
+            @user_database[user_id.to_s] = {} # []
+            @user_database[user_id.to_s][movie_id.to_s] = rating.to_s
         end
       end
 
-        def move_to_rating(movie_id, rating)
-            # function to add user to hash. If it already is there then push it to the array. Otherwise create new array under said key
-            if !@movie_rating_databse[movie_id.to_s].nil?
-                @movie_rating_databse[movie_id.to_s].push([rating])
-            else
-                @movie_rating_databse[movie_id.to_s] = []
-                @movie_rating_databse[movie_id.to_s].push([rating])
+    def move_to_rating(movie_id, rating)
+        if !@movie_rating_databse[movie_id.to_s].nil?
+            @movie_rating_databse[movie_id.to_s].push(rating)
+        else
+            @movie_rating_databse[movie_id.to_s] = []
+            @movie_rating_databse[movie_id.to_s].push(rating)
+        end
+      end
+
+    def similarity(user1, user2)
+        similarity_rate = 0
+        user1_ratings = @user_database[user1] # gives all movies and rating for user
+        user2_ratings = @user_database[user2]
+
+        return false if user1_ratings == user2_ratings
+        return false if @user_database[user1].nil? || @user_database[user2].nil?
+        user1_ratings.to_a.each do |x, y|
+            movie = x.to_i
+            rating = y.to_i
+            if !user2_ratings[x].nil? && user2_ratings[x].to_i.between?(rating - 1, rating + 1)
+                similarity_rate += 1
             end
-          end
+        end
+        # puts similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings)
+        if similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings) > 49
+            return true
+            esle
+            return false
+        end
+    end
 
-# puts @user_database
-    #     def most_similar(user1)
-    #       #This function takes a user and then in the for loops goes index by index of the user_database and sees whats similar_users
-    #       #the user is similar if they have revieved the same movie and their rating is wihtin one (determiend in the if statement)
-    #       #Unforutantetly, I am recieving "movie_data.rb:95:in `block (2 levels) in most_similar': undefined method `[]' for nil:NilClass (NoMethodError)
-    #         user1_data = []
-    #         similar_users = []
-    #         user1_data = @user_database[user1.to_s]
-    #         puts user1_data
-    #
-    #         # for i in 0..user1_data.length - 1 do
-    #         #     for x in 0..@user_database.length - 1 do
-    #         #         if (user1_data[i][0] == @user_database[x][0]) && !user1_data[i].nil? && !user1_data[x].nil? && ((user1_data[i][1].to_i - @user_database[x][1].to_i <= 1) || (@user_database[x][1].to_i - user1_data[i][1].to_i <= 1))
-    #         #             similar_users.push[i]
-    #         #         end
-    #         #     end
-    #         #
-    #         #   end
-    #           #following the above I would rerun the similar_users through the similarity method to deterine if two users are similar_users
-    #           #if the simuarity score is >70% I would declare them similr and add them to a final array to return.
-    #     end
-    # end
+    def similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings)
+        # figures the similarity as a percentage of total movies watched. Based off of the smallest one
 
+        number_of_user1_reviews = user1_ratings.length
+        number_of_user2_reviews = user2_ratings.length
+
+        smaller_number_of_movies = 0
+        if number_of_user1_reviews < number_of_user2_reviews
+            smaller_number_of_movies = number_of_user1_reviews
+        else
+            smaller_number_of_movies = number_of_user2_reviews
+        end
+        (similarity_rate * 100) / smaller_number_of_movies # returns the similiarty as a percentage. The similarity is based off of same movies with a review wihtin one devided by whoever has the least amount of movies reviewed
+    end
+
+    def similar_users_method(user1)
+        counter = 1
+        similar_users = []
+        while counter <= @user_database.length
+            similar_users.push(counter) if similarity(user1, counter.to_s)
+            counter += 1
+        end
+        similar_users
+    end
 
     def average_score(movie_id)
-      #This function takes a user and then in the for loops goes index by index of the user_database and sees whats similar_users
-      #the user is similar if they have revieved the same movie and their rating is wihtin one (determiend in the if statement)
-      #Unforutantetly, I am recieving "movie_data.rb:95:in `block (2 levels) in most_similar': undefined method `[]' for nil:NilClass (NoMethodError)
-      movie_data_reviews = []
-
+        movie_data_reviews = []
         movie_data_reviews = @movie_rating_databse[movie_id.to_s]
-        puts movie_data_reviews
-        counter = 0
-        total_review_number = 0
+        total_review_score = 0
 
-        movie_data_reviews.length.times do |i|
-          counter +=1
-          singular_review =  movie_data_reviews[i]
-          total_review_number+= singular_review.to_i
-          #total_review_number+=
-          puts "singular is #{singular_review}"
+        movie_data_reviews.each do |review|
+            review_int = review.to_int
+            total_review_score += review_int
         end
-        puts "counts is #{counter}"
-        puts "total review total is #{total_review_number}"
-        #     for x in 0..@user_database.length - 1 do
-        #         if (user1_data[i][0] == @user_database[x][0]) && !user1_data[i].nil? && !user1_data[x].nil? && ((user1_data[i][1].to_i - @user_database[x][1].to_i <= 1) || (@user_database[x][1].to_i - user1_data[i][1].to_i <= 1))
-        #             similar_users.push[i]
-        #         end
-        #     end
-        #
-        #   end
-          #following the above I would rerun the similar_users through the similarity method to deterine if two users are similar_users
-          #if the simuarity score is >70% I would declare them similr and add them to a final array to return.
-    # end
+        average = total_review_score / movie_data_reviews.length
 end
 
-
-# puts @movie_rating_databse[242]
+    def predict_rating(user_id, movie_id)
+        similar_users_array =  similar_users_method(user_id)
+        # runs through similar users seeing if they ranked the passed in movie
+        number_of_reviews = 0
+        total_review_score = 0
+        similar_users_array.each do |x|
+            user = x.to_s
+            individual_user = @user_database[user]
+            unless individual_user[movie_id].nil?
+                number_of_reviews += 1
+                total_review_score += individual_user[movie_id].to_i
+            end
+        end
+        if number_of_reviews > 5
+            # only base the alogrithmic determined movie rating if 5 or more similar users rated it. Otherwise it could be a fluke and instead should return the avergae of that movie
+            return total_review_score / number_of_reviews
+        else
+            return average_score(movie_id)
+        end
+        end
 end
-
 
 movie = MovieData.new
 movie.load_data
-
-# puts movie.popularity_list
-
-movie.average_score(242)
+print movie.similarity('213', '212')
+movie.similar_users_method('63')
+movie.average_score(641)
+puts movie.predict_rating('153', '754')
