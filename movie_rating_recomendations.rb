@@ -1,6 +1,8 @@
 # Aaron Gold
-# Movie Part 1
+# Movie Part 2
 # Capstone - Professor Salas
+#Movies 2 and its algorithm for suggesting what a user would rate a movie is based off of similar users and their rating of said movie. If there are not greater than 5 similar users that have rated the movie then it could be a fluke and instead an avergae rating of the movie is determined. 
+
 
 require 'byebug'
 class MovieData
