@@ -4,6 +4,7 @@ Movies Part 2
 [![Code Climate](https://codeclimate.com/github/aharonhillel/Movies_2/badges/gpa.svg)](https://codeclimate.com/github/aharonhillel/Movies_2)
 
 Github: https://github.com/aharonhillel/Movies_2
+
 Code Climate: https://codeclimate.com/github/aharonhillel/Movies_2
 
 The Algorithm. A description of your prediction algorithm and what you think are its advantages and drawbacks.
