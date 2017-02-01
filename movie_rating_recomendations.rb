@@ -29,7 +29,7 @@ class MovieData
             @user_database[user_id.to_s] = {} # []
             @user_database[user_id.to_s][movie_id.to_s] = rating.to_s
         end
-      end
+    end
 
     def move_to_rating(movie_id, rating)
       #created the movie_rating_databse hash
@@ -39,7 +39,7 @@ class MovieData
             @movie_rating_databse[movie_id.to_s] = []
             @movie_rating_databse[movie_id.to_s].push(rating)
         end
-      end
+    end
     def similarity(user1, user2)
       #determines if two users are similar. Users are similar if they have watched the same movie and ranked it within one. TO be similar you must be 60% similar
         similarity_rate = 0
@@ -58,7 +58,7 @@ class MovieData
         # puts similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings)
         if similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings) > 59
             return true
-            esle
+          else
             return false
         end
     end
@@ -93,13 +93,13 @@ class MovieData
         movie_data_reviews = []
         movie_data_reviews = @movie_rating_databse[movie_id.to_s]
         total_review_score = 0
-if !movie_data_reviews.nil?
-        movie_data_reviews.each do |review|
+        if !movie_data_reviews.nil?
+          movie_data_reviews.each do |review|
             review_int = review.to_int
             total_review_score += review_int
-        end
+          end
         return average = total_review_score / movie_data_reviews.length unless movie_data_reviews.nil?
-      end
+        end
       return 0
     end
 
@@ -122,6 +122,6 @@ if !movie_data_reviews.nil?
         else
             return average_score(movie_id)
         end
-        end
+    end
 
 end
