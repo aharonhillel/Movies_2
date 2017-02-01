@@ -1,19 +1,23 @@
 # Aaron Gold
 # Movie Part 2
 # Capstone - Professor Salas
-#Movies 2 and its algorithm for suggesting what a user would rate a movie is based off of similar users and their rating of said movie. If there are not greater than 5 similar users that have rated the movie then it could be a fluke and instead an avergae rating of the movie is determined. 
+#Movies 2 and its algorithm for suggesting what a user would rate a movie is based off of similar users and their rating of said movie. If there are not greater than 5 similar users that have rated the movie then it could be a fluke and instead an avergae rating of the movie is determined.
 
 
 require 'byebug'
 class MovieData
-    def load_data
+    def load_data(file_name)
         @user_database = {} # user database with user as the key and values. hash
         @movie_rating_databse = {}
-        File.open('u.data').each do |eachLine|
+        File.open(file_name).each do |eachLine|
             eachLine = eachLine.split(' ')
             add_user_hash(eachLine[0].to_i, eachLine[1].to_i, eachLine[2].to_i) # creates the user database hash
             move_to_rating(eachLine[1].to_i, eachLine[2].to_i)
         end
+
+    end
+    def return_user_database
+      @user_database
     end
 
     def add_user_hash(user_id, movie_id, rating)
@@ -35,6 +39,13 @@ class MovieData
         end
       end
 
+def return_user_database
+  return @user_database
+end
+def actual_score(user, movie_id)
+    ratings = @user_database[user1]
+    return rating[movie_id]
+end
     def similarity(user1, user2)
         similarity_rate = 0
         user1_ratings = @user_database[user1] # gives all movies and rating for user
@@ -56,6 +67,12 @@ class MovieData
             return false
         end
     end
+    #
+    # def correct_score(user, movie_id)
+    # puts  ratings =  @user_database[user]
+    #   puts "hell"
+    #   puts ratings[movie_id]
+    # end
 
     def similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings)
         # figures the similarity as a percentage of total movies watched. Based off of the smallest one
@@ -86,13 +103,15 @@ class MovieData
         movie_data_reviews = []
         movie_data_reviews = @movie_rating_databse[movie_id.to_s]
         total_review_score = 0
-
+if !movie_data_reviews.nil?
         movie_data_reviews.each do |review|
             review_int = review.to_int
             total_review_score += review_int
         end
-        average = total_review_score / movie_data_reviews.length
-end
+        return average = total_review_score / movie_data_reviews.length unless movie_data_reviews.nil?
+      end
+      return 0
+    end
 
     def predict_rating(user_id, movie_id)
         similar_users_array =  similar_users_method(user_id)
@@ -114,11 +133,17 @@ end
             return average_score(movie_id)
         end
         end
+
 end
 
+
+
+
 movie = MovieData.new
-movie.load_data
-print movie.similarity('213', '212')
-movie.similar_users_method('63')
-movie.average_score(641)
-puts movie.predict_rating('153', '754')
+movie.load_data("ml-100k/u1.base")
+# print movie.similarity('213', '212')
+# # movie.similar_users_method('63')
+# movie.average_score(641)
+
+# puts movie.predict_rating('153', '754')
+# puts movie.correct_score('153', '50')
