@@ -16,7 +16,7 @@ class Compare_methods
     test_data.return_user_database.each do |user, movie|
         movie.each do |individual_movie|
           #loops through the test data seeing if the predicted rating is correct
-            predicted_rating = base.predict_rating(user.to_s, individual_movie[0])
+            predicted_rating = 4
             if   predicted_rating == individual_movie[1].to_i
                 correct += 1
             elsif  predicted_rating.between?(individual_movie[1].to_i, individual_movie[1].to_i + 1)
