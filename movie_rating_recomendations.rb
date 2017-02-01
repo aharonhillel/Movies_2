@@ -8,15 +8,16 @@ require 'byebug'
 class MovieData
     def load_data(file_name)
         @user_database = {} # user database with user as the key and values. hash
-        @movie_rating_databse = {}
+        @movie_rating_databse = {} #hash of movie => an array of ratings
         File.open(file_name).each do |eachLine|
             eachLine = eachLine.split(' ')
             add_user_hash(eachLine[0].to_i, eachLine[1].to_i, eachLine[2].to_i) # creates the user database hash
             move_to_rating(eachLine[1].to_i, eachLine[2].to_i)
         end
-
     end
+
     def return_user_database
+      #accessor method
       @user_database
     end
 
@@ -31,6 +32,7 @@ class MovieData
       end
 
     def move_to_rating(movie_id, rating)
+      #created the movie_rating_databse hash
         if !@movie_rating_databse[movie_id.to_s].nil?
             @movie_rating_databse[movie_id.to_s].push(rating)
         else
@@ -38,15 +40,8 @@ class MovieData
             @movie_rating_databse[movie_id.to_s].push(rating)
         end
       end
-
-def return_user_database
-  return @user_database
-end
-def actual_score(user, movie_id)
-    ratings = @user_database[user1]
-    return rating[movie_id]
-end
     def similarity(user1, user2)
+      #determines if two users are similar. Users are similar if they have watched the same movie and ranked it within one. TO be similar you must be 60% similar
         similarity_rate = 0
         user1_ratings = @user_database[user1] # gives all movies and rating for user
         user2_ratings = @user_database[user2]
@@ -61,18 +56,12 @@ end
             end
         end
         # puts similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings)
-        if similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings) > 49
+        if similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings) > 59
             return true
             esle
             return false
         end
     end
-    #
-    # def correct_score(user, movie_id)
-    # puts  ratings =  @user_database[user]
-    #   puts "hell"
-    #   puts ratings[movie_id]
-    # end
 
     def similarity_as_percentage(similarity_rate, user1_ratings, user2_ratings)
         # figures the similarity as a percentage of total movies watched. Based off of the smallest one
@@ -100,6 +89,7 @@ end
     end
 
     def average_score(movie_id)
+      # If there are not similar users I do not want to heavily weight the results based on one person. Thus if there are less then 5 simialr users that ranked the movie then calcualte the average
         movie_data_reviews = []
         movie_data_reviews = @movie_rating_databse[movie_id.to_s]
         total_review_score = 0
@@ -135,15 +125,3 @@ if !movie_data_reviews.nil?
         end
 
 end
-
-
-
-
-movie = MovieData.new
-movie.load_data("ml-100k/u1.base")
-# print movie.similarity('213', '212')
-# # movie.similar_users_method('63')
-# movie.average_score(641)
-
-# puts movie.predict_rating('153', '754')
-# puts movie.correct_score('153', '50')
